@@ -24,6 +24,8 @@ class MY_Controller extends CI_Controller {
 		$headerData['title'] = $this->title;
 		$headerData['bodyID'] = strtolower($this->router->fetch_class() .'-'.$this->router->fetch_method());
         $headerData['loggedIn'] = $this->ion_auth->logged_in();
+        $headerData['messages'] = $this->messages->get();
+
 
 		return $headerData;
 	}

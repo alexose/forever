@@ -46,3 +46,14 @@
           </div>
         </div><!-- /navbar-inner -->
       </div>
+
+      <?php
+      // display all messages
+      if (is_array($messages)):
+        foreach ($messages as $type => $msgs):
+          foreach ($msgs as $message):
+            echo ('<span class="' .  $type .'">' . $message . '</span>');
+          endforeach;
+        endforeach;
+      endif;
+      ?>
