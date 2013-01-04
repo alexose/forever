@@ -6,6 +6,7 @@ class Photo extends MY_Controller {
     {  
         parent::__construct();
         if (!$this->ion_auth->logged_in()) redirect('auth/login', 'refresh');
+        $this->load->library('form_validation');
         $this->load->view('partials/header', $this->headerViewData());
     }
 
@@ -33,14 +34,17 @@ class Photo extends MY_Controller {
     // POST a photo via form
     public function add()
     {
-        if (!isset($this->input->post)):
+        if (!$this->input->post()):
             $this->messages->add('There was a problem with your upload.', 'error');
             redirect('photo');
+        else:
+            $post = $this->input->post();
+            $post['user_id'] = '';
+
+            $id = $this->mongo_db->insert('photos', $post);
+
         endif;
-
-		$this->load->view('photo/index', $this->data);
-		$this->load->view('partials/footer');
-
+        redirect('photo');
     }
 
     // DELETE a photo
