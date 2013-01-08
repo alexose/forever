@@ -1092,7 +1092,7 @@ class Mongo_db
         {
             $this->_show_error('No Mongo collection selected to update', 500);
         }
-        
+       
         if (count($this->updates) === 0)
         {
             $this->_show_error('Nothing to update in Mongo collection or update is not an array', 500); 

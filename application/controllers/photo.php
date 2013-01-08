@@ -47,13 +47,23 @@ class Photo extends MY_Controller {
         redirect('photo');
     }
 
-    // DELETE a photo
+    // Archive a photo
     public function delete($id)
     {
+        // Rather than straight up delete it, we'll mark it for archive.
         if (!$this->ion_auth->logged_in()) redirect('auth/login', 'refresh');
 
-		$this->load->view('photo/index', $this->data);
-		$this->load->view('partials/footer');
+        $id = new MongoId($id);
+        $success = $this->mongo_db
+            ->where(array('_id' => $id))
+            ->set(array('archived' => true))
+            ->update('photos');
+	
+        if ($success)
+            $this->messages->add('Photo deleted.', 'error');
+        else
+            $this->messages->add('There was a problem with your deletion.', 'error');
+        redirect('photo');
     }
 }
 
