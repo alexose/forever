@@ -24,11 +24,9 @@ class Photo extends MY_Controller {
             ->where('owner_id', $userid)
             ->get('photos');
 
-        //var_dump($this->data);
-
 		$this->load->view('photo/index', $this->data);
 		$this->load->view('partials/footer');
-	
+        	
     }
 
     // POST a photo via form
@@ -39,7 +37,42 @@ class Photo extends MY_Controller {
             redirect('photo');
         else:
             $post = $this->input->post();
-            $post['user_id'] = '';
+            $user = $this->ion_auth->user()->row();
+            $username = $user->username;
+            $userid = $user->id->{'$id'};
+            $post['user_id'] = $userid;
+
+            // TODO: simple validation
+
+            // Upload file to S3
+            $config['upload_path'] = './temp/';
+            $config['allowed_types'] = 'gif|jpg|png';
+            $config['max_size'] = '1000000';
+            $config['max_width']  = '1024000';
+            $config['max_height']  = '768000';            
+            $this->load->library('upload', $config); 
+           
+            if (!$this->upload->do_upload()):
+                $error = array('error' => $this->upload->display_errors());
+            else:
+                $data = $this->upload->data();
+                $fn = $data['file_name'];
+                $type = substr($fn, strrpos($fn, '.') + 1);
+                
+                $this->load->library('s3');
+                $temp_file_path = "./temp/" . $data['file_name'];
+                $newFileName = uniqid().".".substr($temp_file_path, strrpos($temp_file_path, '.') + 1);
+                $contentPath = "alexose.com/forever/mages"; 
+
+                $this->s3->putObject($newFileName, $username . '-' . $userid, $contentPath, 'private', $type);
+                echo 'success'; 
+                
+            endif;
+
+
+            // TODO: move this to user creation station
+            //$this->s3->putBucket($username . '-' . $userid, S3::ACL_PUBLIC_READ);
+            
 
             $id = $this->mongo_db->insert('photos', $post);
 

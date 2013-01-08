@@ -1,10 +1,10 @@
 <h1>Your photos</h1>
 
 <?php 
-echo form_open("photo/add");
+echo form_open_multipart("photo/add", 'name="add_photo"');
 echo form_fieldset('Add a photo');
 echo form_input('title');
-echo form_upload('file');
+echo form_upload('userfile');
 echo form_submit('upload', 'Upload');
 echo form_fieldset_close();
 echo form_close();
