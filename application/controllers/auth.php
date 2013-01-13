@@ -391,11 +391,6 @@ class Auth extends CI_Controller {
     {
         $this->data['title'] = "Create User";
 
-        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
-        {
-            redirect('auth', 'refresh');
-        }
-
         //validate form input
         $this->form_validation->set_rules('first_name', 'First Name', 'required|xss_clean');
         $this->form_validation->set_rules('last_name', 'Last Name', 'required|xss_clean');
@@ -424,8 +419,13 @@ class Auth extends CI_Controller {
         {
             //check to see if we are creating the user
             //redirect them back to the admin page
-            $this->session->set_flashdata('message', $this->ion_auth->messages());
-            redirect("auth", 'refresh');
+            if ($this->ion_auth->is_admin())
+            {
+                $this->session->set_flashdata('message', $this->ion_auth->messages());
+                redirect("auth", 'refresh');
+            } else {
+                redirect("thankyou", 'refresh');
+            }
         }
         else
         {
@@ -488,7 +488,14 @@ class Auth extends CI_Controller {
                 'value' => $this->form_validation->set_value('password_confirm'),
             );
 
-            $this->load->view('auth/create_user', $this->data);
+            if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+            {
+                $this->load->view('auth/register', $this->data);
+            }
+            else
+            {
+                $this->load->view('auth/create_user', $this->data);
+            }
         }
     }
 

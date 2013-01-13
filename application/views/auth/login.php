@@ -24,5 +24,6 @@
   <p><?php echo form_submit('submit', 'Login');?></p>
     
 <?php echo form_close();?>
-
 <p><a href="forgot_password">Forgot your password?</a></p>
+<p><a href="create_user">Register a new account</a></p>
+
