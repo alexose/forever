@@ -53,7 +53,7 @@ class Photo extends MY_Controller {
             $this->load->library('upload', $config); 
            
             if (!$this->upload->do_upload()):
-                $error = array('error' => $this->upload->display_errors());
+                $this->messages->add($this->upload->display_errors(), 'error');
             else:
                 $data = $this->upload->data();
                 $fn = $data['file_name'];
@@ -62,9 +62,18 @@ class Photo extends MY_Controller {
                 $this->load->library('s3');
                 $temp_file_path = "./temp/" . $data['file_name'];
                 $newFileName = uniqid().".".substr($temp_file_path, strrpos($temp_file_path, '.') + 1);
-                $contentPath = "alexose.com/forever/mages"; 
+                $contentPath = "alexose.com/forever/images"; 
 
-                $this->s3->putObject($newFileName, $username . '-' . $userid, $contentPath, 'private', $type);
+                // Check to see if bucket exists.  If not, create it.
+                $bucketname = $username . '-' . $userid;
+                if (!$this->s3->getBucketLocation($bucketname))
+                    $this->s3->putBucket($bucketname);
+                
+                try {
+                    $this->s3->putObject($newFileName, $bucketname, $contentPath, 'private', $type);
+                } catch(Exception $error){
+                    $this->messages->add($error, 'error');
+                }
                 echo 'success'; 
                 
             endif;
@@ -80,7 +89,7 @@ class Photo extends MY_Controller {
         redirect('photo');
     }
 
-    // Archive a photo
+    // Delete a photo
     public function delete($id)
     {
         // Rather than straight up delete it, we'll mark it for archive.

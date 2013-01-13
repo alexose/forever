@@ -32,8 +32,8 @@ class Set extends MY_Controller {
         $this->load->view('partials/footer');
     }
 
-    // POST a new set via form
-    public function add()
+    // Archive current working set to amazon glacier
+    public function archive()
     {
         if (!$this->input->post()):
             $this->messages->add('There was a problem with your request.', 'error');
@@ -44,15 +44,30 @@ class Set extends MY_Controller {
             $username = $user->username;
             $userid = $user->id->{'$id'};
             
-            // TODO: simple validation
-             
-            $id = $this->mongo_db->insert('set', $post);
+            // Gather data about working set
+            $photos = $this->mongo_db
+                ->where('owner_id', $userid)
+                ->get('photos');
+  
+            var_dump($photos);
+ 
+            $set = array(
+                'description' => $post['description'],
+                'files' => 0,
+                'oldest' => 0,
+                'newest' => 0,
+            );
+
+            // Insert set information into Mongo
+            // $id  => $this->mongo_db->insert('set', $set),
+            
+            // Start the job!
 
         endif;
         redirect('photo');
     }
 
-    // Archive a photo
+    // Delete a set
     public function delete($id)
     {
         // Rather than straight up delete it, we'll mark it for archive.
@@ -62,13 +77,13 @@ class Set extends MY_Controller {
         $success = $this->mongo_db
             ->where(array('_id' => $id))
             ->set(array('archived' => true))
-            ->update('photos');
+            ->update('set');
 	
         if ($success)
-            $this->messages->add('Photo deleted.', 'error');
+            $this->messages->add('Set deleted.', 'error');
         else
             $this->messages->add('There was a problem with your deletion.', 'error');
-        redirect('photo');
+        redirect('set');
     }
 }
 

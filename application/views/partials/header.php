@@ -37,8 +37,8 @@
               <?php if($loggedIn){ ?>
               <ul class="nav">
                <li class="<?php echo ($bodyID == 'home-index') ? 'active' : ''; ?>"><a href="/">Home</a></li>
-               <li class="<?php echo ($bodyID == 'set-index') ? 'active' : ''; ?>"><a href="/set">Set</a></li>
-               <li class="<?php echo ($bodyID == 'photo-index') ? 'active' : ''; ?>"><a href="/photo">Photo</a></li>
+               <li class="<?php echo ($bodyID == 'set-index') ? 'active' : ''; ?>"><a href="/set">Sets</a></li>
+               <li class="<?php echo ($bodyID == 'photo-index') ? 'active' : ''; ?>"><a href="/photo">Workspace</a></li>
               </ul>
               <ul class="nav pull-right">
                 <li><a href="/auth/logout">Logout</a></li>
