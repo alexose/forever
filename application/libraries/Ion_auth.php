@@ -450,11 +450,12 @@ class Ion_auth
         
         $id || $id = $this->session->userdata('user_id');
 
+        if (!$id) return FALSE;
+
         if (!is_array($check_group))
         {
             $check_group = array($check_group);
         }
-        
         if (isset($this->_cache_user_in_group[$id->{'$id'}]))
         {
             $groups_array = $this->_cache_user_in_group[$id];

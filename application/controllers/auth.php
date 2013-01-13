@@ -413,7 +413,7 @@ class Auth extends MY_Controller {
                 $this->session->set_flashdata('message', $this->ion_auth->messages());
                 redirect("auth", 'refresh');
             } else {
-                redirect("thankyou", 'refresh');
+                redirect("auth/thankyou", 'refresh');
             }
         }
         else
@@ -673,4 +673,9 @@ class Auth extends MY_Controller {
         }
     }
 
+    function thankyou(){
+        // TODO: redirect non-signup views
+        $this->data = array();
+        $this->load->view('auth/thankyou', $this->data);
+    }
 }
