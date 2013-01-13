@@ -397,10 +397,9 @@ class Auth extends MY_Controller {
 
         if ($this->form_validation->run() == true)
         {
-            $username = $this->input->post('email');
             $email    = $this->input->post('email');
+            $username = preg_replace("/[^a-zA-Z0-9]/", "-", $email); 
             $password = $this->input->post('password');
-
             $additional_data = array(
             );
         }
