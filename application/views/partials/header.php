@@ -4,12 +4,12 @@
 	<meta charset="utf-8">
 		
 	<title><?php echo $title ?></title>
-   <link rel="stylesheet" href="/forever/assets/css/bootstrap.min.css" />
+   <link rel="stylesheet" href="<?= base_url() ?>/assets/css/bootstrap.min.css" />
 	<?php $layout = $this->input->get('layout', TRUE); ?>
   <?php if($layout == 'responsive') : ?>
-    <link rel="stylesheet" href="/forever/assets/css/bootstrap-responsive.min.css" /> 
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/bootstrap-responsive.min.css" /> 
   <?php endif;?>
-    <link rel="stylesheet" href="/forever/assets/css/style.css" />
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/style.css" />
     
 	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
 	<script type="text/javascript">
@@ -17,8 +17,8 @@
 		google.load('jquery', '1.7.1');
 		//-->
 	</script>
-  <script type="text/javascript" src="/forever/assets/js/bootstrap.min.js" ></script>
-	<script type="text/javascript" src="/forever/assets/js/script.js" ></script>
+  <script type="text/javascript" src="<?= base_url() ?>/assets/js/bootstrap.min.js" ></script>
+	<script type="text/javascript" src="<?= base_url() ?>/assets/js/script.js" ></script>
 
 </head>
 
