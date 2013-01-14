@@ -13,8 +13,8 @@ echo form_close();
 <ul class="photo-list">
 <?php foreach ($this->data['photos'] as $photo): ?>
     <li>
+        <img class="img-rounded" src="<?= "http://s3.amazonaws.com/" . $bucketName . '/' . $photo['uri'] ?>" />
         <h2><?= $photo['title'] ?></h2>
-        <img src="<?= "http://s3.amazonaws.com/" . $bucketName . '/' . $photo['uri'] ?>" />
     </li>
 <?php endforeach; ?>
 </ul>
