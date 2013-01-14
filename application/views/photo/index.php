@@ -14,7 +14,7 @@ echo form_close();
 <?php foreach ($this->data['photos'] as $photo): ?>
     <li>
         <h2><?= $photo['title'] ?></h2>
-        <img src="<?= $photo['url'] ?>" />
+        <img src="<?= "http://s3.amazonaws.com/" . $bucketName . '/' . $photo['uri'] ?>" />
     </li>
 <?php endforeach; ?>
 </ul>

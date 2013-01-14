@@ -16,14 +16,19 @@ class Photo extends MY_Controller {
 
         // Example insert
         // $id = $this->mongo_db->insert($this->collections['users'], $data);
-
-        $userid = '50e3897058a399235c000000';
+        
+        $user = $this->ion_auth->user()->row();
+        $userid = $user->id->{'$id'};
 
         // Example read
         $this->data['photos'] = $this->mongo_db   
-            ->where('owner_id', $userid)
+            ->where('user_id', $userid)
             ->get('photos');
 
+        // Get bucket name from system config, or create 
+        $settings = $this->mongo_db->where(array('active' => true))->get('settings');
+        $this->data['bucketName'] = $settings[0]['bucketname'];
+        
 		$this->load->view('photo/index', $this->data);
 		$this->load->view('partials/footer');
         	
@@ -57,33 +62,46 @@ class Photo extends MY_Controller {
             else:
                 $data = $this->upload->data();
                 $fn = $data['file_name'];
-                $type = substr($fn, strrpos($fn, '.') + 1);
                 
+                // Insert into mongo
+                $contentPath = 'photos/' . $username . '-' . $userid . '/' . $data['file_name'];
+                $post['uri'] = $contentPath;
+
+                $id = $this->mongo_db->insert('photos', $post);
+
                 $this->load->library('s3');
                 $temp_file_path = "./temp/" . $data['file_name'];
-                $newFileName = uniqid().".".substr($temp_file_path, strrpos($temp_file_path, '.') + 1);
-                $contentPath = "alexose.com/forever/images"; 
-
-                // Check to see if bucket exists.  If not, create it.
-                $bucketname = $username . '-' . $userid;
-                if (!$this->s3->getBucketLocation($bucketname))
-                    $this->s3->putBucket($bucketname);
+                $newFileName = $id."-".$data['file_name'];
+               
+                // Get bucket name from system config, or create 
+                $settings = $this->mongo_db->where(array('active' => true))->get('settings');
+                $bucketName = $settings[0]['bucketname'];
                 
+                if (!$bucketName):
+                    $bucketName = uniqid() . '-photos';
+                    $this->mongo_db->insert('settings', array( 
+                        'active' => true, 
+                        'bucketname' => $bucketName
+                    )); 
+                    try {
+                        $this->s3->putBucket($bucketName);
+                    } catch (Exception $error){
+                        $this->messages->add($error);
+                        return;
+                    }
+                endif;
+
                 try {
-                    $this->s3->putObject($newFileName, $bucketname, $contentPath, 'private', $type);
-                } catch(Exception $error){
-                    $this->messages->add($error, 'error');
+                    $this->s3->putObject(file_get_contents($data['full_path']), $bucketName, $contentPath, 'public-read');
+                } catch (Exception $error){
+                    // Hrm 
+                    $this->messages->add($error);
+                    return;
                 }
-                echo 'success'; 
+                
+                $this->messages->add('Photo uploaded.', 'alert');
                 
             endif;
-
-
-            // TODO: move this to user creation station
-            //$this->s3->putBucket($username . '-' . $userid, S3::ACL_PUBLIC_READ);
-            
-
-            $id = $this->mongo_db->insert('photos', $post);
 
         endif;
         redirect('photo');
